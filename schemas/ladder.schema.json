@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Model Ladder Schema",
+  "type": "object",
+  "required": ["rankings", "primary_metric", "total_models"],
+  "properties": {
+    "rankings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["rank", "model_id", "model_spec", "primary_score", "all_metrics"],
+        "properties": {
+          "rank": {"type": "integer", "minimum": 1},
+          "model_id": {"type": "string"},
+          "model_spec": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {"type": "string"},
+              "params": {"type": "object"}
+            }
+          },
+          "primary_score": {"type": "number"},
+          "all_metrics": {
+            "type": "object",
+            "patternProperties": {
+              ".*": {"type": "number"}
+            }
+          },
+          "train_time": {"type": "number", "minimum": 0},
+          "confidence_interval": {
+            "type": "object",
+            "properties": {
+              "lower": {"type": "number"},
+              "upper": {"type": "number"},
+              "confidence": {"type": "number", "minimum": 0, "maximum": 1}
+            }
+          },
+          "memory_usage_mb": {"type": "number", "minimum": 0},
+          "model_size_mb": {"type": "number", "minimum": 0}
+        }
+      }
+    },
+    "best_model": {
+      "type": "object",
+      "properties": {
+        "rank": {"type": "integer", "minimum": 1},
+        "model_id": {"type": "string"},
+        "model_spec": {"type": "object"},
+        "primary_score": {"type": "number"},
+        "all_metrics": {"type": "object"}
+      }
+    },
+    "primary_metric": {
+      "type": "string",
+      "enum": ["accuracy", "f1_score", "precision", "recall", "roc_auc", "pr_auc", "mae", "rmse", "r2", "mape"]
+    },
+    "total_models": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "selection_criteria": {
+      "type": "object",
+      "properties": {
+        "metric_threshold": {"type": "number"},
+        "runtime_constraint": {"type": "number"},
+        "memory_constraint": {"type": "number"},
+        "interpretability_weight": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "cross_validation": {
+      "type": "object",
+      "properties": {
+        "folds": {"type": "integer", "minimum": 2},
+        "strategy": {"type": "string", "enum": ["kfold", "stratified", "time_series"]},
+        "seed": {"type": "integer"}
+      }
+    }
+  }
+}

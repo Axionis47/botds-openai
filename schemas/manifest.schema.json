@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Run Manifest Schema",
+  "type": "object",
+  "required": ["job_id", "created_at"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}$"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "config_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "dataset_hash": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "seeds": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "integer"}
+      }
+    },
+    "budgets_used": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "properties": {
+            "duration_seconds": {"type": "number", "minimum": 0},
+            "memory_peak_gb": {"type": "number", "minimum": 0},
+            "tokens_used": {"type": "integer", "minimum": 0},
+            "budget_status": {"type": "string", "enum": ["ok", "downshift", "abort"]}
+          }
+        }
+      }
+    },
+    "cache_hits": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "boolean"}
+      }
+    },
+    "versions": {
+      "type": "object",
+      "properties": {
+        "python": {"type": "string"},
+        "sklearn": {"type": "string"},
+        "pandas": {"type": "string"},
+        "numpy": {"type": "string"},
+        "botds": {"type": "string"}
+      }
+    },
+    "shortcuts_taken": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 5
+      }
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "platform": {"type": "string"},
+        "architecture": {"type": "string"},
+        "cpu_count": {"type": "integer", "minimum": 1},
+        "memory_total_gb": {"type": "number", "minimum": 0}
+      }
+    },
+    "pipeline_stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["stage", "status", "duration_seconds"],
+        "properties": {
+          "stage": {"type": "string"},
+          "status": {"type": "string", "enum": ["completed", "failed", "skipped"]},
+          "duration_seconds": {"type": "number", "minimum": 0},
+          "error_message": {"type": "string"},
+          "outputs": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}

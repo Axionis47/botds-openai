@@ -1,0 +1,51 @@
+data:
+  source: "builtin"
+  name: "breast_cancer"
+  target: ""  # auto for builtins
+
+task: "auto"  # will be inferred as classification
+
+metrics:
+  primary: "pr_auc"  # Precision-Recall AUC for imbalanced binary classification
+  secondary: ["roc_auc", "accuracy", "f1_score", "precision", "recall"]
+
+business_goal: "Predict breast cancer malignancy from cell characteristics to assist in early diagnosis and treatment planning"
+
+budgets:
+  time_min: 25
+  memory_gb: 4
+  token_budget: 8000
+
+fairness:
+  enabled: false  # Could enable if demographic data available
+  sensitive_cols: []
+  policy: "report"
+
+pii:
+  enabled: true
+  patterns: ["email", "phone", "ssn"]  # Medical data may contain PII
+  action: "redact"
+
+split:
+  policy: "iid"
+  time_col: ""
+  test_size: 0.2
+  val_size: 0.2
+  rolling: false
+  seed: 42
+
+sampling:
+  eda_rows: 200000
+  stratify_by: ["target"]  # Stratify by cancer diagnosis
+
+cache:
+  mode: "warm"
+  dir: "./cache"
+
+report:
+  out_dir: "./artifacts"
+  format: "html"
+
+llms:
+  openai_model: "gpt-4o-mini"
+  ollama_model: "llama3.2"

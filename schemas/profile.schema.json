@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Dataset Profile Schema",
+  "type": "object",
+  "required": ["shape", "columns", "dtypes", "missing_values", "column_types"],
+  "properties": {
+    "shape": {
+      "type": "object",
+      "required": ["rows", "columns"],
+      "properties": {
+        "rows": {"type": "integer", "minimum": 0},
+        "columns": {"type": "integer", "minimum": 0}
+      }
+    },
+    "columns": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "dtypes": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "string"}
+      }
+    },
+    "memory_usage_mb": {
+      "type": "number",
+      "minimum": 0
+    },
+    "missing_values": {
+      "type": "object",
+      "required": ["total_missing", "missing_by_column", "missing_percentage"],
+      "properties": {
+        "total_missing": {"type": "integer", "minimum": 0},
+        "missing_by_column": {"type": "object"},
+        "missing_percentage": {"type": "object"}
+      }
+    },
+    "column_types": {
+      "type": "object",
+      "required": ["numeric", "categorical", "datetime"],
+      "properties": {
+        "numeric": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "categorical": {
+          "type": "array", 
+          "items": {"type": "string"}
+        },
+        "datetime": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "numeric_stats": {
+      "type": "object"
+    },
+    "categorical_stats": {
+      "type": "object"
+    },
+    "potential_targets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["column", "unique_values", "type"],
+        "properties": {
+          "column": {"type": "string"},
+          "unique_values": {"type": "integer"},
+          "type": {"type": "string", "enum": ["classification_candidate", "regression_candidate"]}
+        }
+      }
+    }
+  }
+}

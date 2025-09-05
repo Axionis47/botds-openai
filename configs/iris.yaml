@@ -1,0 +1,51 @@
+data:
+  source: "builtin"
+  name: "iris"
+  target: ""  # auto for builtins
+
+task: "auto"  # will be inferred as classification
+
+metrics:
+  primary: "auto"  # will select appropriate metric for classification
+  secondary: ["roc_auc", "accuracy", "f1_score"]
+
+business_goal: "Classify iris flowers into species based on petal and sepal measurements for botanical research"
+
+budgets:
+  time_min: 25
+  memory_gb: 4
+  token_budget: 8000
+
+fairness:
+  enabled: false
+  sensitive_cols: []
+  policy: "report"
+
+pii:
+  enabled: true
+  patterns: ["email", "phone"]
+  action: "redact"
+
+split:
+  policy: "iid"
+  time_col: ""
+  test_size: 0.2
+  val_size: 0.2
+  rolling: false
+  seed: 42
+
+sampling:
+  eda_rows: 200000
+  stratify_by: []
+
+cache:
+  mode: "warm"
+  dir: "./cache"
+
+report:
+  out_dir: "./artifacts"
+  format: "html"
+
+llms:
+  openai_model: "gpt-4o-mini"
+  ollama_model: "llama3.2"

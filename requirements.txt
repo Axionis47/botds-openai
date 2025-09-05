@@ -1,0 +1,12 @@
+pydantic>=2.7
+pyyaml
+numpy
+pandas
+scikit-learn
+matplotlib
+tqdm
+requests
+python-dotenv
+joblib
+openai>=1.0.0
+psutil

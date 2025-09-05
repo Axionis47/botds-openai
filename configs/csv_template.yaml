@@ -1,0 +1,53 @@
+data:
+  source: "csv"
+  name: "csv"
+  csv_paths: 
+    - "path/to/your/data.csv"  # Update this path
+  target: "target_column_name"  # Update this to your target column
+
+task: "auto"  # classification | regression | auto
+
+metrics:
+  primary: "auto"  # auto picks appropriate metric based on task
+  secondary: ["roc_auc", "accuracy", "f1_score", "mae", "rmse"]
+
+business_goal: "Describe your business objective here"
+
+budgets:
+  time_min: 25
+  memory_gb: 4
+  token_budget: 8000
+
+fairness:
+  enabled: false  # Set to true if you have sensitive attributes
+  sensitive_cols: []  # Add column names like ["gender", "age_group"]
+  policy: "report"  # report | block
+
+pii:
+  enabled: true
+  patterns: ["email", "phone", "ssn", "credit_card"]
+  action: "redact"  # redact | block
+
+split:
+  policy: "iid"  # iid | time
+  time_col: ""  # Required if policy is "time"
+  test_size: 0.2
+  val_size: 0.2
+  rolling: false
+  seed: 42
+
+sampling:
+  eda_rows: 200000  # Sample size for EDA if dataset is large
+  stratify_by: []  # Add target column for classification: ["target_column_name"]
+
+cache:
+  mode: "warm"  # warm | cold | paranoid
+  dir: "./cache"
+
+report:
+  out_dir: "./artifacts"
+  format: "html"  # html | md
+
+llms:
+  openai_model: "gpt-4o-mini"
+  ollama_model: "llama3.2"

@@ -1,0 +1,124 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Report Payload Schema",
+  "type": "object",
+  "required": ["business_goal", "primary_metric", "selected_model", "robustness_grade"],
+  "properties": {
+    "business_goal": {
+      "type": "string",
+      "minLength": 10
+    },
+    "primary_metric": {
+      "type": "string",
+      "enum": ["accuracy", "f1_score", "precision", "recall", "roc_auc", "pr_auc", "mae", "rmse", "r2", "mape", "auto"]
+    },
+    "dataset_info": {
+      "type": "object",
+      "properties": {
+        "shape": {"type": "string"},
+        "name": {"type": "string"},
+        "source": {"type": "string"},
+        "time_window": {"type": "string"}
+      }
+    },
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "leakage_status": {
+      "type": "string",
+      "enum": ["pass", "warn", "block", "not_checked"]
+    },
+    "top_insights": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5,
+      "items": {
+        "type": "string",
+        "minLength": 10
+      }
+    },
+    "selected_model": {
+      "type": "object",
+      "required": ["name", "score"],
+      "properties": {
+        "name": {"type": "string"},
+        "score": {"type": ["number", "string"]},
+        "rationale": {"type": "string"},
+        "model_id": {"type": "string"},
+        "confidence_interval": {"type": "string"}
+      }
+    },
+    "leaderboard": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "score"],
+        "properties": {
+          "name": {"type": "string"},
+          "score": {"type": ["number", "string"]},
+          "ci": {"type": "string"},
+          "runtime": {"type": "string"},
+          "rank": {"type": "integer", "minimum": 1}
+        }
+      }
+    },
+    "operating_point": {
+      "type": "object",
+      "properties": {
+        "threshold": {"type": "string"},
+        "conservative": {"type": "string"},
+        "tradeoff": {"type": "string"}
+      }
+    },
+    "robustness_grade": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D", "Not assessed"]
+    },
+    "robustness_reason": {
+      "type": "string"
+    },
+    "next_steps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 5
+      }
+    },
+    "shortcuts_taken": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 5
+      }
+    },
+    "config_snapshot": {
+      "type": "string"
+    },
+    "dataset_hash": {
+      "type": "string"
+    },
+    "seeds": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "integer"}
+      }
+    },
+    "fairness_summary": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "status": {"type": "string"},
+        "issues_count": {"type": "integer", "minimum": 0}
+      }
+    },
+    "pii_summary": {
+      "type": "object",
+      "properties": {
+        "enabled": {"type": "boolean"},
+        "risk_level": {"type": "string", "enum": ["none", "low", "medium", "high"]},
+        "redactions_made": {"type": "integer", "minimum": 0}
+      }
+    }
+  }
+}

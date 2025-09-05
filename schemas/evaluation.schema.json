@@ -1,0 +1,139 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Model Evaluation Schema",
+  "type": "object",
+  "required": ["task_type", "test_metrics", "robustness_grade"],
+  "properties": {
+    "task_type": {
+      "type": "string",
+      "enum": ["classification", "regression"]
+    },
+    "test_metrics": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "number"}
+      }
+    },
+    "confidence_intervals": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "object",
+          "required": ["mean", "lower", "upper"],
+          "properties": {
+            "mean": {"type": "number"},
+            "lower": {"type": "number"},
+            "upper": {"type": "number"},
+            "std": {"type": "number", "minimum": 0},
+            "n_bootstrap": {"type": "integer", "minimum": 1}
+          }
+        }
+      }
+    },
+    "calibration": {
+      "type": "object",
+      "properties": {
+        "calibration_applied": {"type": "boolean"},
+        "method": {"type": "string", "enum": ["isotonic", "sigmoid"]},
+        "metrics": {
+          "type": "object",
+          "properties": {
+            "ece_before": {"type": "number", "minimum": 0, "maximum": 1},
+            "ece_after": {"type": "number", "minimum": 0, "maximum": 1},
+            "ece_improvement": {"type": "number"},
+            "brier_before": {"type": "number", "minimum": 0, "maximum": 1},
+            "brier_after": {"type": "number", "minimum": 0, "maximum": 1},
+            "brier_improvement": {"type": "number"}
+          }
+        }
+      }
+    },
+    "fairness": {
+      "type": "object",
+      "properties": {
+        "status": {"type": "string", "enum": ["no_sensitive_columns", "no_issues", "issues_found"]},
+        "slice_metrics": {"type": "object"},
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["column", "metric", "severity"],
+            "properties": {
+              "column": {"type": "string"},
+              "metric": {"type": "string"},
+              "disparity": {"type": "number"},
+              "disparity_ratio": {"type": "number"},
+              "severity": {"type": "string", "enum": ["low", "medium", "high"]}
+            }
+          }
+        }
+      }
+    },
+    "robustness_grade": {
+      "type": "string",
+      "enum": ["A", "B", "C", "D"]
+    },
+    "robustness_details": {
+      "type": "object",
+      "properties": {
+        "shock_tests": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["test", "performance_drop", "passed"],
+            "properties": {
+              "test": {"type": "string"},
+              "performance_drop": {"type": "number"},
+              "passed": {"type": "boolean"},
+              "threshold": {"type": "number"}
+            }
+          }
+        },
+        "ablation_study": {
+          "type": "object",
+          "properties": {
+            "baseline_score": {"type": "number"},
+            "max_performance_drop": {"type": "number"},
+            "avg_performance_drop": {"type": "number"},
+            "top_features": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["feature", "importance", "performance_drop"],
+                "properties": {
+                  "feature": {"type": "string"},
+                  "importance": {"type": "number"},
+                  "performance_drop": {"type": "number"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "operating_point": {
+      "type": "object",
+      "properties": {
+        "threshold": {"type": "number", "minimum": 0, "maximum": 1},
+        "precision": {"type": "number", "minimum": 0, "maximum": 1},
+        "recall": {"type": "number", "minimum": 0, "maximum": 1},
+        "f1_score": {"type": "number", "minimum": 0, "maximum": 1},
+        "selection_method": {"type": "string"}
+      }
+    },
+    "error_analysis": {
+      "type": "object",
+      "properties": {
+        "confusion_matrix": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "integer", "minimum": 0}
+          }
+        },
+        "classification_report": {"type": "object"},
+        "residual_analysis": {"type": "object"}
+      }
+    }
+  }
+}

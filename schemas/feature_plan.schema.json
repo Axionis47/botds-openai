@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Feature Engineering Plan Schema",
+  "type": "object",
+  "required": ["target", "feature_columns", "transforms", "rationale"],
+  "properties": {
+    "target": {
+      "type": "string",
+      "minLength": 1
+    },
+    "feature_columns": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "denied_columns": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "transforms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["column", "dtype", "missing_count", "unique_values", "transforms"],
+        "properties": {
+          "column": {"type": "string"},
+          "dtype": {"type": "string"},
+          "missing_count": {"type": "integer", "minimum": 0},
+          "unique_values": {"type": "integer", "minimum": 0},
+          "transforms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "impute_median", "impute_mode", "impute_mean",
+                "standard_scale", "min_max_scale", "robust_scale",
+                "label_encode", "one_hot_encode", "target_encode",
+                "high_cardinality_encode", "ordinal_encode",
+                "log_transform", "sqrt_transform", "box_cox_transform",
+                "polynomial_features", "interaction_features"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "rationale": {
+      "type": "object",
+      "required": ["total_features", "excluded_features"],
+      "properties": {
+        "total_features": {"type": "integer", "minimum": 0},
+        "excluded_features": {"type": "integer", "minimum": 0},
+        "numeric_features": {"type": "integer", "minimum": 0},
+        "categorical_features": {"type": "integer", "minimum": 0},
+        "missing_data_columns": {"type": "integer", "minimum": 0},
+        "reasoning": {"type": "string"}
+      }
+    }
+  }
+}

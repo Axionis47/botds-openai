@@ -1,0 +1,2 @@
+# This file ensures the artifacts directory is tracked by git
+# Artifacts from pipeline runs will be stored here

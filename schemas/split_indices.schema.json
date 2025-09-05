@@ -1,0 +1,98 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Data Split Indices Schema",
+  "type": "object",
+  "required": ["policy", "seed", "sizes", "proportions", "indices"],
+  "properties": {
+    "policy": {
+      "type": "string",
+      "enum": ["iid", "time"]
+    },
+    "seed": {
+      "type": "integer"
+    },
+    "sizes": {
+      "type": "object",
+      "required": ["train", "val", "test"],
+      "properties": {
+        "train": {"type": "integer", "minimum": 1},
+        "val": {"type": "integer", "minimum": 1},
+        "test": {"type": "integer", "minimum": 1}
+      }
+    },
+    "proportions": {
+      "type": "object",
+      "required": ["train", "val", "test"],
+      "properties": {
+        "train": {"type": "number", "minimum": 0, "maximum": 1},
+        "val": {"type": "number", "minimum": 0, "maximum": 1},
+        "test": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    },
+    "indices": {
+      "type": "object",
+      "required": ["train", "val", "test"],
+      "properties": {
+        "train": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "val": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0}
+        },
+        "test": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "train_target_dist": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "integer", "minimum": 0}
+      }
+    },
+    "val_target_dist": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "integer", "minimum": 0}
+      }
+    },
+    "test_target_dist": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {"type": "integer", "minimum": 0}
+      }
+    },
+    "time_column": {
+      "type": "string"
+    },
+    "time_ranges": {
+      "type": "object",
+      "properties": {
+        "train": {
+          "type": "object",
+          "properties": {
+            "start": {"type": "string"},
+            "end": {"type": "string"}
+          }
+        },
+        "val": {
+          "type": "object",
+          "properties": {
+            "start": {"type": "string"},
+            "end": {"type": "string"}
+          }
+        },
+        "test": {
+          "type": "object",
+          "properties": {
+            "start": {"type": "string"},
+            "end": {"type": "string"}
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+data:
+  source: "builtin"
+  name: "diabetes"
+  target: ""  # auto for builtins
+
+task: "auto"  # will be inferred as regression
+
+metrics:
+  primary: "mae"  # Mean Absolute Error for regression
+  secondary: ["rmse", "r2", "mape"]
+
+business_goal: "Predict diabetes progression score from baseline measurements to guide treatment intensity and monitoring frequency"
+
+budgets:
+  time_min: 25
+  memory_gb: 4
+  token_budget: 8000
+
+fairness:
+  enabled: false  # Could enable if demographic features available
+  sensitive_cols: []
+  policy: "report"
+
+pii:
+  enabled: true
+  patterns: ["email", "phone", "ssn"]  # Medical data precautions
+  action: "redact"
+
+split:
+  policy: "iid"
+  time_col: ""
+  test_size: 0.2
+  val_size: 0.2
+  rolling: false
+  seed: 42
+
+sampling:
+  eda_rows: 200000
+  stratify_by: []  # No stratification for regression
+
+cache:
+  mode: "warm"
+  dir: "./cache"
+
+report:
+  out_dir: "./artifacts"
+  format: "html"
+
+llms:
+  openai_model: "gpt-4o-mini"
+  ollama_model: "llama3.2"
