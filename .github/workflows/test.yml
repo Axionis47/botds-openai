@@ -1,0 +1,115 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.12]
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest
+    
+    - name: Run tests (without OpenAI key)
+      run: |
+        # Test that system fails gracefully without API key
+        python -c "
+        import sys
+        sys.path.insert(0, '.')
+        from botds import Config
+        try:
+            config = Config.from_yaml('configs/iris.yaml')
+            config.validate_environment()
+            print('ERROR: Should have failed without API key')
+            sys.exit(1)
+        except ValueError as e:
+            if 'OPENAI_API_KEY' in str(e):
+                print('✅ Correctly fails without API key')
+                sys.exit(0)
+            else:
+                print(f'ERROR: Wrong error: {e}')
+                sys.exit(1)
+        "
+    
+    - name: Test configuration loading
+      run: |
+        python -c "
+        import sys
+        sys.path.insert(0, '.')
+        from botds import Config
+        
+        # Test all configs load correctly
+        configs = ['configs/iris.yaml', 'configs/breast_cancer.yaml', 'configs/diabetes.yaml']
+        for config_path in configs:
+            try:
+                config = Config.from_yaml(config_path)
+                print(f'✅ {config_path} loads correctly')
+            except Exception as e:
+                print(f'❌ {config_path} failed: {e}')
+                sys.exit(1)
+        print('✅ All configurations valid')
+        "
+    
+    - name: Test imports and basic functionality
+      run: |
+        python -c "
+        import sys
+        sys.path.insert(0, '.')
+        
+        # Test all imports work
+        from botds import Config, Pipeline
+        from botds.tools import DataStore, SchemaProfiler, QualityGuard
+        from botds.cache import Cache
+        from botds.utils import generate_job_id, hash_object
+        
+        print('✅ All imports successful')
+        
+        # Test basic functionality
+        job_id = generate_job_id()
+        assert len(job_id) == 8
+        print(f'✅ Job ID generation: {job_id}')
+        
+        hash_val = hash_object('test')
+        assert hash_val.startswith('sha256:')
+        print(f'✅ Hash generation: {hash_val[:20]}...')
+        "
+    
+    - name: Validate JSON schemas
+      run: |
+        python -c "
+        import json
+        import os
+        
+        schema_dir = 'schemas'
+        schemas = [f for f in os.listdir(schema_dir) if f.endswith('.json')]
+        
+        for schema_file in schemas:
+            schema_path = os.path.join(schema_dir, schema_file)
+            try:
+                with open(schema_path) as f:
+                    schema = json.load(f)
+                assert 'type' in schema
+                print(f'✅ {schema_file} is valid JSON schema')
+            except Exception as e:
+                print(f'❌ {schema_file} invalid: {e}')
+                exit(1)
+        
+        print(f'✅ All {len(schemas)} schemas are valid')
+        "
